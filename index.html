@@ -9,7 +9,11 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; color: #111827; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 8px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         h1 { font-size: 24px; font-weight: 600; margin: 0 0 4px 0; }
-        .updated { font-size: 12px; color: #6b7280; margin: 0 0 1.5rem 0; }
+        .meta-row { display:flex; align-items:center; gap:10px; margin:4px 0 1.5rem 0; flex-wrap:wrap; }
+        .updated { font-size: 12px; color: #6b7280; }
+        .brand-switcher { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:1.5rem; padding-bottom:1.5rem; border-bottom:0.5px solid #e5e7eb; }
+        .brand-btn { padding:7px 18px; border:1.5px solid #d1d5db; border-radius:20px; cursor:pointer; font-size:13px; font-weight:600; background:white; color:#6b7280; transition:all 0.2s; }
+        .brand-btn.active { background:#111827; color:white; border-color:#111827; }
         .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 0.5px solid #e5e7eb; }
         .legend-item { display: flex; align-items: center; gap: 6px; }
         .legend-color { width: 12px; height: 12px; border-radius: 2px; }
@@ -33,10 +37,12 @@
 <body>
 <div class="container">
     <h1>Google Search Interests Index</h1>
-    <div style="display:flex; align-items:center; gap:10px; margin:4px 0 1.5rem 0;">
-        <div class="updated" style="margin:0;">Last updated: June 21, 2026 at 05:17 PM</div>
-        <span style="background:#f3f4f6; border:0.5px solid #d1d5db; border-radius:6px; padding:3px 10px; font-size:12px; font-weight:600; color:#111827;">Search: Quince</span>
+    <div class="meta-row">
+        <span class="updated">Last updated: June 21, 2026 at 05:45 PM</span>
     </div>
+
+    <div class="brand-switcher" id="brand-switcher"></div>
+
     <div class="legend">
         <div class="legend-item"><div class="legend-color" style="background:#2563EB"></div><span class="legend-text">Web Search</span></div>
         <div class="legend-item"><div class="legend-color" style="background:#DC2626"></div><span class="legend-text">Image Search</span></div>
@@ -44,18 +50,20 @@
         <div class="legend-item"><div class="legend-color" style="background:#F59E0B"></div><span class="legend-text">Google Shopping</span></div>
         <div class="legend-item"><div class="legend-color" style="background:#9333EA"></div><span class="legend-text">Youtube Search</span></div>
     </div>
+
     <div class="section">
         <h2>Interest over time</h2>
         <div class="buttons">
             <button id="btn-all" style="background:#111827;color:white">All metrics</button>
-            <button id="btn-web" style="background:#2563EB;color:white">Web</button>
-            <button id="btn-image" style="background:#DC2626;color:white">Image</button>
-            <button id="btn-news" style="background:#16A34A;color:white">News</button>
+            <button id="btn-web"      style="background:#2563EB;color:white">Web</button>
+            <button id="btn-image"    style="background:#DC2626;color:white">Image</button>
+            <button id="btn-news"     style="background:#16A34A;color:white">News</button>
             <button id="btn-shopping" style="background:#F59E0B;color:white">Shopping</button>
-            <button id="btn-youtube" style="background:#9333EA;color:white">YouTube</button>
+            <button id="btn-youtube"  style="background:#9333EA;color:white">YouTube</button>
         </div>
         <svg id="chart" class="chart-svg"></svg>
     </div>
+
     <div class="section">
         <h2>Top queries interest</h2>
         <div class="table-wrapper">
@@ -64,23 +72,52 @@
     </div>
 </div>
 <script>
-const trendData = [{"time": "2025-12-28", "web": 38, "image": 58, "news": 0, "shopping": 10, "youtube": 81}, {"time": "2026-01-04", "web": 35, "image": 60, "news": 0, "shopping": 12, "youtube": 87}, {"time": "2026-01-11", "web": 35, "image": 67, "news": 0, "shopping": 8, "youtube": 90}, {"time": "2026-01-18", "web": 36, "image": 64, "news": 0, "shopping": 8, "youtube": 87}, {"time": "2026-01-25", "web": 36, "image": 64, "news": 0, "shopping": 9, "youtube": 100}, {"time": "2026-02-01", "web": 33, "image": 49, "news": 0, "shopping": 11, "youtube": 85}, {"time": "2026-02-08", "web": 31, "image": 45, "news": 91, "shopping": 9, "youtube": 78}, {"time": "2026-02-15", "web": 35, "image": 55, "news": 0, "shopping": 10, "youtube": 82}, {"time": "2026-02-22", "web": 37, "image": 57, "news": 0, "shopping": 9, "youtube": 80}, {"time": "2026-03-01", "web": 37, "image": 96, "news": 0, "shopping": 12, "youtube": 91}, {"time": "2026-03-08", "web": 41, "image": 100, "news": 0, "shopping": 9, "youtube": 83}, {"time": "2026-03-15", "web": 40, "image": 90, "news": 0, "shopping": 13, "youtube": 86}, {"time": "2026-03-22", "web": 51, "image": 94, "news": 0, "shopping": 22, "youtube": 87}, {"time": "2026-03-29", "web": 72, "image": 100, "news": 0, "shopping": 64, "youtube": 80}, {"time": "2026-04-05", "web": 87, "image": 81, "news": 0, "shopping": 99, "youtube": 80}, {"time": "2026-04-12", "web": 100, "image": 80, "news": 0, "shopping": 100, "youtube": 93}, {"time": "2026-04-19", "web": 79, "image": 79, "news": 0, "shopping": 76, "youtube": 90}, {"time": "2026-04-26", "web": 65, "image": 54, "news": 100, "shopping": 50, "youtube": 85}, {"time": "2026-05-03", "web": 65, "image": 52, "news": 0, "shopping": 36, "youtube": 80}, {"time": "2026-05-10", "web": 79, "image": 60, "news": 0, "shopping": 70, "youtube": 83}, {"time": "2026-05-17", "web": 72, "image": 93, "news": 0, "shopping": 78, "youtube": 77}, {"time": "2026-05-24", "web": 60, "image": 93, "news": 0, "shopping": 32, "youtube": 79}, {"time": "2026-05-31", "web": 61, "image": 60, "news": 0, "shopping": 45, "youtube": 79}, {"time": "2026-06-07", "web": 51, "image": 66, "news": 18, "shopping": 71, "youtube": 80}, {"time": "2026-06-14", "web": 48, "image": 62, "news": 16, "shopping": 76, "youtube": 81}];
-const keywordData = {"web": [{"query": "quince dress", "interest": 100}, {"query": "quince linen", "interest": 95}, {"query": "quince clothing", "interest": 62}, {"query": "quince pants", "interest": 58}, {"query": "quince jeans", "interest": 40}, {"query": "quince shoes", "interest": 39}, {"query": "one quince", "interest": 29}, {"query": "what is quince", "interest": 27}, {"query": "quince bedding", "interest": 23}, {"query": "quince duvet cover", "interest": 23}, {"query": "quince cashmere sweater", "interest": 21}, {"query": "quince linen dress", "interest": 20}, {"query": "quince reviews", "interest": 20}, {"query": "quince discount", "interest": 20}, {"query": "quince dresses", "interest": 19}, {"query": "quince review", "interest": 19}, {"query": "quince sheets", "interest": 18}, {"query": "quince suitcase", "interest": 16}, {"query": "quince linen pants", "interest": 16}, {"query": "quince fruit", "interest": 14}, {"query": "quince discount code", "interest": 14}, {"query": "quince quilt", "interest": 13}, {"query": "quince linen shirt", "interest": 13}, {"query": "quince sale", "interest": 12}, {"query": "quince luggage", "interest": 11}], "image": [{"query": "quince dress", "interest": 100}, {"query": "pink quince", "interest": 46}, {"query": "red quince", "interest": 43}, {"query": "quince dresses", "interest": 41}, {"query": "quince a\u00f1os", "interest": 36}, {"query": "quinceanera", "interest": 29}, {"query": "quince fruit", "interest": 23}, {"query": "blue quince dress", "interest": 23}, {"query": "quince hair", "interest": 20}, {"query": "quince party", "interest": 19}, {"query": "pink quince dress", "interest": 17}, {"query": "quince tree", "interest": 17}, {"query": "green quince dress", "interest": 17}, {"query": "gold quince dress", "interest": 15}, {"query": "flowering quince", "interest": 14}, {"query": "red quince dress", "interest": 13}, {"query": "black quince dress", "interest": 13}, {"query": "quince dance", "interest": 12}, {"query": "quince 15", "interest": 11}, {"query": "quince food", "interest": 11}, {"query": "quince nails", "interest": 11}, {"query": "quinceanera dresses", "interest": 10}, {"query": "quince clothing", "interest": 10}, {"query": "quince crown", "interest": 10}, {"query": "white quince dress", "interest": 10}], "news": [{"query": "quince therapeutics", "interest": 100}, {"query": "quince therapeutics inc", "interest": 28}, {"query": "quince clothing", "interest": 16}], "shopping": [{"query": "quince dresses", "interest": 100}, {"query": "quince linen pants", "interest": 95}, {"query": "quince clothing", "interest": 92}, {"query": "quince cashmere sweater", "interest": 87}, {"query": "quince bedding", "interest": 77}, {"query": "quince linen duvet cover", "interest": 70}, {"query": "quince linen pants women", "interest": 53}, {"query": "quince bamboo sheet set", "interest": 40}, {"query": "quince fruit", "interest": 36}, {"query": "quince european linen duvet cover", "interest": 35}, {"query": "quince linen sheets", "interest": 32}, {"query": "quince bamboo sheets", "interest": 28}, {"query": "quince european linen pants", "interest": 28}, {"query": "quince percale sheets", "interest": 22}, {"query": "quince mongolian cashmere crewneck sweater", "interest": 20}, {"query": "quince promo code", "interest": 18}], "youtube": [{"query": "quince dance", "interest": 100}, {"query": "quince a\u00f1os", "interest": 72}, {"query": "quinceanera", "interest": 60}, {"query": "quince surprise dance", "interest": 43}, {"query": "quince songs", "interest": 38}, {"query": "quince review", "interest": 31}, {"query": "quince vals", "interest": 29}, {"query": "quince minutos con jesus", "interest": 23}, {"query": "quince minutos con jesus sacramentado", "interest": 23}, {"query": "quince dress", "interest": 23}, {"query": "quince anos", "interest": 22}, {"query": "mis quince", "interest": 21}, {"query": "quince dances", "interest": 20}, {"query": "quincea\u00f1era", "interest": 15}, {"query": "quince bag", "interest": 14}, {"query": "quince linen", "interest": 13}, {"query": "quinceanera surprise dance", "interest": 12}, {"query": "planning my quince", "interest": 10}, {"query": "quinceanera songs", "interest": 10}, {"query": "mis quince a\u00f1os", "interest": 9}, {"query": "quince dresses", "interest": 9}, {"query": "quince jeans", "interest": 8}, {"query": "quince luggage", "interest": 8}, {"query": "quince clothing", "interest": 7}, {"query": "quince bedding", "interest": 4}]};
-const colors = {web:'#2563EB',image:'#DC2626',news:'#16A34A',shopping:'#F59E0B',youtube:'#9333EA'};
+const brands     = ["quince", "shein"];
+const brandsData = {"quince": {"trends": {"web": [{"time": "2026-01-03", "value": 61}, {"time": "2026-01-10", "value": 58}, {"time": "2026-01-17", "value": 33}, {"time": "2026-01-24", "value": 44}, {"time": "2026-01-31", "value": 56}, {"time": "2026-02-07", "value": 52}, {"time": "2026-02-14", "value": 60}, {"time": "2026-02-21", "value": 47}, {"time": "2026-02-28", "value": 68}, {"time": "2026-03-07", "value": 62}, {"time": "2026-03-14", "value": 60}, {"time": "2026-03-21", "value": 47}, {"time": "2026-03-28", "value": 51}, {"time": "2026-04-04", "value": 32}, {"time": "2026-04-11", "value": 32}, {"time": "2026-04-18", "value": 57}, {"time": "2026-04-25", "value": 50}, {"time": "2026-05-02", "value": 62}, {"time": "2026-05-09", "value": 37}, {"time": "2026-05-16", "value": 40}, {"time": "2026-05-23", "value": 60}, {"time": "2026-05-30", "value": 70}, {"time": "2026-06-06", "value": 67}, {"time": "2026-06-13", "value": 44}, {"time": "2026-06-20", "value": 50}], "image": [{"time": "2026-01-03", "value": 53}, {"time": "2026-01-10", "value": 57}, {"time": "2026-01-17", "value": 81}, {"time": "2026-01-24", "value": 86}, {"time": "2026-01-31", "value": 57}, {"time": "2026-02-07", "value": 53}, {"time": "2026-02-14", "value": 84}, {"time": "2026-02-21", "value": 56}, {"time": "2026-02-28", "value": 59}, {"time": "2026-03-07", "value": 56}, {"time": "2026-03-14", "value": 73}, {"time": "2026-03-21", "value": 53}, {"time": "2026-03-28", "value": 51}, {"time": "2026-04-04", "value": 89}, {"time": "2026-04-11", "value": 65}, {"time": "2026-04-18", "value": 90}, {"time": "2026-04-25", "value": 78}, {"time": "2026-05-02", "value": 59}, {"time": "2026-05-09", "value": 88}, {"time": "2026-05-16", "value": 63}, {"time": "2026-05-23", "value": 55}, {"time": "2026-05-30", "value": 62}, {"time": "2026-06-06", "value": 66}, {"time": "2026-06-13", "value": 90}, {"time": "2026-06-20", "value": 63}], "news": [{"time": "2026-01-03", "value": 16}, {"time": "2026-01-10", "value": 8}, {"time": "2026-01-17", "value": 0}, {"time": "2026-01-24", "value": 0}, {"time": "2026-01-31", "value": 19}, {"time": "2026-02-07", "value": 11}, {"time": "2026-02-14", "value": 0}, {"time": "2026-02-21", "value": 11}, {"time": "2026-02-28", "value": 9}, {"time": "2026-03-07", "value": 2}, {"time": "2026-03-14", "value": 0}, {"time": "2026-03-21", "value": 0}, {"time": "2026-03-28", "value": 15}, {"time": "2026-04-04", "value": 0}, {"time": "2026-04-11", "value": 9}, {"time": "2026-04-18", "value": 1}, {"time": "2026-04-25", "value": 0}, {"time": "2026-05-02", "value": 8}, {"time": "2026-05-09", "value": 9}, {"time": "2026-05-16", "value": 0}, {"time": "2026-05-23", "value": 11}, {"time": "2026-05-30", "value": 0}, {"time": "2026-06-06", "value": 1}, {"time": "2026-06-13", "value": 5}, {"time": "2026-06-20", "value": 8}], "shopping": [{"time": "2026-01-03", "value": 26}, {"time": "2026-01-10", "value": 43}, {"time": "2026-01-17", "value": 14}, {"time": "2026-01-24", "value": 18}, {"time": "2026-01-31", "value": 12}, {"time": "2026-02-07", "value": 19}, {"time": "2026-02-14", "value": 14}, {"time": "2026-02-21", "value": 23}, {"time": "2026-02-28", "value": 35}, {"time": "2026-03-07", "value": 46}, {"time": "2026-03-14", "value": 19}, {"time": "2026-03-21", "value": 48}, {"time": "2026-03-28", "value": 23}, {"time": "2026-04-04", "value": 41}, {"time": "2026-04-11", "value": 49}, {"time": "2026-04-18", "value": 31}, {"time": "2026-04-25", "value": 43}, {"time": "2026-05-02", "value": 46}, {"time": "2026-05-09", "value": 15}, {"time": "2026-05-16", "value": 30}, {"time": "2026-05-23", "value": 37}, {"time": "2026-05-30", "value": 46}, {"time": "2026-06-06", "value": 21}, {"time": "2026-06-13", "value": 43}, {"time": "2026-06-20", "value": 44}], "youtube": [{"time": "2026-01-03", "value": 74}, {"time": "2026-01-10", "value": 87}, {"time": "2026-01-17", "value": 68}, {"time": "2026-01-24", "value": 72}, {"time": "2026-01-31", "value": 79}, {"time": "2026-02-07", "value": 64}, {"time": "2026-02-14", "value": 86}, {"time": "2026-02-21", "value": 73}, {"time": "2026-02-28", "value": 61}, {"time": "2026-03-07", "value": 63}, {"time": "2026-03-14", "value": 91}, {"time": "2026-03-21", "value": 60}, {"time": "2026-03-28", "value": 100}, {"time": "2026-04-04", "value": 93}, {"time": "2026-04-11", "value": 79}, {"time": "2026-04-18", "value": 98}, {"time": "2026-04-25", "value": 80}, {"time": "2026-05-02", "value": 78}, {"time": "2026-05-09", "value": 94}, {"time": "2026-05-16", "value": 73}, {"time": "2026-05-23", "value": 66}, {"time": "2026-05-30", "value": 74}, {"time": "2026-06-06", "value": 89}, {"time": "2026-06-13", "value": 79}, {"time": "2026-06-20", "value": 87}]}, "keywords": {"web": [{"query": "quince item 1", "interest": 54}, {"query": "quince item 2", "interest": 73}, {"query": "quince item 3", "interest": 93}, {"query": "quince item 4", "interest": 89}, {"query": "quince item 5", "interest": 20}], "image": [{"query": "quince item 1", "interest": 76}, {"query": "quince item 2", "interest": 73}, {"query": "quince item 3", "interest": 37}, {"query": "quince item 4", "interest": 99}, {"query": "quince item 5", "interest": 35}], "news": [{"query": "quince item 1", "interest": 74}, {"query": "quince item 2", "interest": 42}, {"query": "quince item 3", "interest": 85}, {"query": "quince item 4", "interest": 55}, {"query": "quince item 5", "interest": 24}], "shopping": [{"query": "quince item 1", "interest": 99}, {"query": "quince item 2", "interest": 49}, {"query": "quince item 3", "interest": 51}, {"query": "quince item 4", "interest": 24}, {"query": "quince item 5", "interest": 43}], "youtube": [{"query": "quince item 1", "interest": 28}, {"query": "quince item 2", "interest": 63}, {"query": "quince item 3", "interest": 95}, {"query": "quince item 4", "interest": 54}, {"query": "quince item 5", "interest": 87}]}}, "shein": {"trends": {"web": [{"time": "2026-01-03", "value": 48}, {"time": "2026-01-10", "value": 32}, {"time": "2026-01-17", "value": 40}, {"time": "2026-01-24", "value": 36}, {"time": "2026-01-31", "value": 42}, {"time": "2026-02-07", "value": 30}, {"time": "2026-02-14", "value": 53}, {"time": "2026-02-21", "value": 59}, {"time": "2026-02-28", "value": 59}, {"time": "2026-03-07", "value": 61}, {"time": "2026-03-14", "value": 52}, {"time": "2026-03-21", "value": 44}, {"time": "2026-03-28", "value": 51}, {"time": "2026-04-04", "value": 36}, {"time": "2026-04-11", "value": 31}, {"time": "2026-04-18", "value": 56}, {"time": "2026-04-25", "value": 63}, {"time": "2026-05-02", "value": 55}, {"time": "2026-05-09", "value": 65}, {"time": "2026-05-16", "value": 63}, {"time": "2026-05-23", "value": 58}, {"time": "2026-05-30", "value": 57}, {"time": "2026-06-06", "value": 31}, {"time": "2026-06-13", "value": 65}, {"time": "2026-06-20", "value": 60}], "image": [{"time": "2026-01-03", "value": 77}, {"time": "2026-01-10", "value": 74}, {"time": "2026-01-17", "value": 80}, {"time": "2026-01-24", "value": 66}, {"time": "2026-01-31", "value": 79}, {"time": "2026-02-07", "value": 53}, {"time": "2026-02-14", "value": 75}, {"time": "2026-02-21", "value": 74}, {"time": "2026-02-28", "value": 76}, {"time": "2026-03-07", "value": 84}, {"time": "2026-03-14", "value": 56}, {"time": "2026-03-21", "value": 52}, {"time": "2026-03-28", "value": 86}, {"time": "2026-04-04", "value": 75}, {"time": "2026-04-11", "value": 89}, {"time": "2026-04-18", "value": 64}, {"time": "2026-04-25", "value": 55}, {"time": "2026-05-02", "value": 50}, {"time": "2026-05-09", "value": 82}, {"time": "2026-05-16", "value": 78}, {"time": "2026-05-23", "value": 68}, {"time": "2026-05-30", "value": 72}, {"time": "2026-06-06", "value": 61}, {"time": "2026-06-13", "value": 69}, {"time": "2026-06-20", "value": 69}], "news": [{"time": "2026-01-03", "value": 5}, {"time": "2026-01-10", "value": 3}, {"time": "2026-01-17", "value": 0}, {"time": "2026-01-24", "value": 0}, {"time": "2026-01-31", "value": 0}, {"time": "2026-02-07", "value": 0}, {"time": "2026-02-14", "value": 14}, {"time": "2026-02-21", "value": 9}, {"time": "2026-02-28", "value": 0}, {"time": "2026-03-07", "value": 25}, {"time": "2026-03-14", "value": 24}, {"time": "2026-03-21", "value": 0}, {"time": "2026-03-28", "value": 14}, {"time": "2026-04-04", "value": 9}, {"time": "2026-04-11", "value": 3}, {"time": "2026-04-18", "value": 2}, {"time": "2026-04-25", "value": 0}, {"time": "2026-05-02", "value": 0}, {"time": "2026-05-09", "value": 8}, {"time": "2026-05-16", "value": 25}, {"time": "2026-05-23", "value": 23}, {"time": "2026-05-30", "value": 0}, {"time": "2026-06-06", "value": 4}, {"time": "2026-06-13", "value": 0}, {"time": "2026-06-20", "value": 25}], "shopping": [{"time": "2026-01-03", "value": 33}, {"time": "2026-01-10", "value": 20}, {"time": "2026-01-17", "value": 21}, {"time": "2026-01-24", "value": 25}, {"time": "2026-01-31", "value": 28}, {"time": "2026-02-07", "value": 19}, {"time": "2026-02-14", "value": 21}, {"time": "2026-02-21", "value": 46}, {"time": "2026-02-28", "value": 21}, {"time": "2026-03-07", "value": 48}, {"time": "2026-03-14", "value": 47}, {"time": "2026-03-21", "value": 39}, {"time": "2026-03-28", "value": 30}, {"time": "2026-04-04", "value": 43}, {"time": "2026-04-11", "value": 33}, {"time": "2026-04-18", "value": 27}, {"time": "2026-04-25", "value": 22}, {"time": "2026-05-02", "value": 37}, {"time": "2026-05-09", "value": 34}, {"time": "2026-05-16", "value": 34}, {"time": "2026-05-23", "value": 20}, {"time": "2026-05-30", "value": 33}, {"time": "2026-06-06", "value": 26}, {"time": "2026-06-13", "value": 26}, {"time": "2026-06-20", "value": 23}], "youtube": [{"time": "2026-01-03", "value": 61}, {"time": "2026-01-10", "value": 87}, {"time": "2026-01-17", "value": 74}, {"time": "2026-01-24", "value": 87}, {"time": "2026-01-31", "value": 79}, {"time": "2026-02-07", "value": 63}, {"time": "2026-02-14", "value": 74}, {"time": "2026-02-21", "value": 87}, {"time": "2026-02-28", "value": 93}, {"time": "2026-03-07", "value": 77}, {"time": "2026-03-14", "value": 78}, {"time": "2026-03-21", "value": 69}, {"time": "2026-03-28", "value": 88}, {"time": "2026-04-04", "value": 96}, {"time": "2026-04-11", "value": 76}, {"time": "2026-04-18", "value": 100}, {"time": "2026-04-25", "value": 93}, {"time": "2026-05-02", "value": 85}, {"time": "2026-05-09", "value": 96}, {"time": "2026-05-16", "value": 60}, {"time": "2026-05-23", "value": 96}, {"time": "2026-05-30", "value": 99}, {"time": "2026-06-06", "value": 96}, {"time": "2026-06-13", "value": 61}, {"time": "2026-06-20", "value": 89}]}, "keywords": {"web": [{"query": "shein item 1", "interest": 58}, {"query": "shein item 2", "interest": 96}, {"query": "shein item 3", "interest": 48}, {"query": "shein item 4", "interest": 73}, {"query": "shein item 5", "interest": 55}], "image": [{"query": "shein item 1", "interest": 91}, {"query": "shein item 2", "interest": 54}, {"query": "shein item 3", "interest": 85}, {"query": "shein item 4", "interest": 100}, {"query": "shein item 5", "interest": 37}], "news": [{"query": "shein item 1", "interest": 89}, {"query": "shein item 2", "interest": 43}, {"query": "shein item 3", "interest": 36}, {"query": "shein item 4", "interest": 34}, {"query": "shein item 5", "interest": 86}], "shopping": [{"query": "shein item 1", "interest": 25}, {"query": "shein item 2", "interest": 97}, {"query": "shein item 3", "interest": 41}, {"query": "shein item 4", "interest": 97}, {"query": "shein item 5", "interest": 67}], "youtube": [{"query": "shein item 1", "interest": 40}, {"query": "shein item 2", "interest": 98}, {"query": "shein item 3", "interest": 31}, {"query": "shein item 4", "interest": 38}, {"query": "shein item 5", "interest": 46}]}}};
+const colors     = {web:'#2563EB',image:'#DC2626',news:'#16A34A',shopping:'#F59E0B',youtube:'#9333EA'};
 const metricLabels = {web:'Web Search',image:'Image Search',news:'News Search',shopping:'Google Shopping',youtube:'Youtube Search'};
-const metrics = ['web','image','news','shopping','youtube'];
+const metrics    = ['web','image','news','shopping','youtube'];
+
+let activeBrand   = brands[0];
 let activeMetrics = new Set(metrics);
 
+// ── Brand switcher ──────────────────────────────────────────────────────────
+const switcher = document.getElementById('brand-switcher');
+brands.forEach(b => {
+    const btn = document.createElement('button');
+    btn.className = 'brand-btn' + (b === activeBrand ? ' active' : '');
+    btn.textContent = b.charAt(0).toUpperCase() + b.slice(1);
+    btn.onclick = () => {
+        activeBrand = b;
+        document.querySelectorAll('.brand-btn').forEach(el => el.classList.remove('active'));
+        btn.classList.add('active');
+        rebuildTable();
+        drawChart();
+    };
+    switcher.appendChild(btn);
+});
+
+// ── Chart ───────────────────────────────────────────────────────────────────
 function drawChart() {
+    const trendData = metrics.reduce((acc, m) => {
+        const rows = brandsData[activeBrand].trends[m] || [];
+        rows.forEach((r, i) => {
+            if (!acc[i]) acc[i] = {time: r.time};
+            acc[i][m] = r.value;
+        });
+        return acc;
+    }, []);
+
     const svg = document.getElementById('chart');
     svg.innerHTML = '';
     const width = svg.getBoundingClientRect().width || svg.clientWidth;
-    if (!width) return;
+    if (!width || trendData.length < 2) return;
     const height = svg.clientHeight;
     const pad = {top:20, right:20, bottom:40, left:50};
     const gw = width - pad.left - pad.right;
     const gh = height - pad.top - pad.bottom;
     const xStep = gw / (trendData.length - 1);
+
     for (let i = 0; i <= 4; i++) {
         const y = pad.top + (gh/4)*i;
         const line = document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -93,14 +130,16 @@ function drawChart() {
         t.setAttribute('text-anchor','end'); t.setAttribute('font-size','11'); t.setAttribute('fill','#9ca3af');
         t.textContent = 100-(i*25); svg.appendChild(t);
     }
+
     metrics.forEach(m => {
         if (!activeMetrics.has(m)) return;
-        const pts = trendData.map((d,i) => `${pad.left+i*xStep},${pad.top+gh-(d[m]/100)*gh}`).join(' ');
+        const pts = trendData.map((d,i) => `${pad.left+i*xStep},${pad.top+gh-((d[m]||0)/100)*gh}`).join(' ');
         const pl = document.createElementNS('http://www.w3.org/2000/svg','polyline');
         pl.setAttribute('points',pts); pl.setAttribute('fill','none');
         pl.setAttribute('stroke',colors[m]); pl.setAttribute('stroke-width','2');
         svg.appendChild(pl);
     });
+
     trendData.forEach((d,i) => {
         if (i % 4 !== 0) return;
         const x = pad.left + i*xStep;
@@ -116,8 +155,13 @@ function drawChart() {
     });
 }
 
-function buildTable() {
+// ── Table ───────────────────────────────────────────────────────────────────
+function rebuildTable() {
+    const keywordData = brandsData[activeBrand].keywords;
     const thead = document.getElementById('table-head');
+    const tbody = document.getElementById('table-body');
+    thead.innerHTML = ''; tbody.innerHTML = '';
+
     const hr = document.createElement('tr');
     metrics.forEach(m => {
         const th1 = document.createElement('th');
@@ -128,12 +172,12 @@ function buildTable() {
         hr.appendChild(th2);
     });
     thead.appendChild(hr);
-    const tbody = document.getElementById('table-body');
-    const maxRows = Math.max(...Object.values(keywordData).map(a => a.length));
+
+    const maxRows = Math.max(...metrics.map(m => (keywordData[m]||[]).length));
     for (let i = 0; i < maxRows; i++) {
         const row = document.createElement('tr');
         metrics.forEach(m => {
-            const item = keywordData[m][i];
+            const item = (keywordData[m]||[])[i];
             const td1 = document.createElement('td'); td1.textContent = item ? item.query : ''; row.appendChild(td1);
             const td2 = document.createElement('td');
             if (item) {
@@ -151,17 +195,18 @@ function buildTable() {
     }
 }
 
+// ── Metric toggle buttons ───────────────────────────────────────────────────
 document.getElementById('btn-all').onclick = () => {
     if (activeMetrics.size === 5) activeMetrics.clear(); else activeMetrics = new Set(metrics);
-    updateButtons(); drawChart();
+    updateMetricButtons(); drawChart();
 };
 metrics.forEach(m => {
     document.getElementById('btn-'+m).onclick = () => {
         activeMetrics.has(m) ? activeMetrics.delete(m) : activeMetrics.add(m);
-        updateButtons(); drawChart();
+        updateMetricButtons(); drawChart();
     };
 });
-function updateButtons() {
+function updateMetricButtons() {
     metrics.forEach(m => {
         const btn = document.getElementById('btn-'+m);
         if (activeMetrics.has(m)) { btn.style.backgroundColor=colors[m]; btn.style.color='white'; btn.style.border='none'; }
@@ -171,7 +216,8 @@ function updateButtons() {
     if (activeMetrics.size===5) { ba.style.backgroundColor='#111827'; ba.style.color='white'; ba.style.border='none'; }
     else { ba.style.backgroundColor='white'; ba.style.color='#111827'; ba.style.border='0.5px solid #d1d5db'; }
 }
-buildTable();
+
+rebuildTable();
 requestAnimationFrame(drawChart);
 window.addEventListener('resize', drawChart);
 </script>
